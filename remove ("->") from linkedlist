@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define MAX_SIZE 100
+
+typedef struct Node {
+    int data;
+    struct Node *next;
+}Node;
+
+void appendNode(Node **headRef, int newData) {
+    Node *newNode = (Node*)malloc(sizeof(Node));
+    Node *last = *headRef;
+    newNode->data = newData;
+    newNode->next = NULL;
+    if (*headRef == NULL) {
+        *headRef = newNode;
+        return;
+    }
+    while (last->next != NULL) {
+        last = last->next;
+    }
+    last->next = newNode;
+}
+
+void printList(struct Node *node) {
+    while (node != NULL) {
+        printf("%d ", node->data);
+        node = node->next;
+    }
+}
+
+int main() {
+    struct Node *head = NULL;
+    
+    char input[MAX_SIZE];
+    printf("Enter linked list: \n");
+    fgets(input, MAX_SIZE, stdin);
+    char *token=strtok(input, "->");
+    while(token!=NULL){
+        appendNode(&head, atoi(token));
+        token = strtok(NULL, "->");
+    }
+    
+    printList(head);
+
+    return 0;
+}
