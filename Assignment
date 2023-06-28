@@ -2,87 +2,86 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct Node {
+typedef struct Node {
     char data[10];
     struct Node* left;
     struct Node* right;
-};
+} node;
 
-struct Node* createNode(const char* data) {
-    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+node* createNode(char* data) {
+    node* newNode = (node*)malloc(sizeof(node));
     strcpy(newNode->data, data);
     newNode->left = NULL;
     newNode->right = NULL;
     return newNode;
 }
 
-void getParentNodes(struct Node* root, const char* value, char** getParent, int* length) {
-    if (root == NULL)
-        return;
-
-    strcpy(getParent[*length], root->data);
-    (*length)++;
-
-    if (strcmp(root->data, value) == 0) {
-        return;
+int findPath(node* root, char* val, char** path, int index) {
+    if (root == NULL){
+        return 0;
+    }
+    strcpy(path[index], root->data);
+    if (strcmp(root->data, val) == 0){
+        return 1;
     }
 
-    getParentNodes(root->left, value, getParent, length);
-    getParentNodes(root->right, value, getParent, length);
-
-    if (strcmp(getParent[*length - 1], value) != 0) {
-        (*length)--;
+    if(findPath(root->left, val, path, index + 1)||findPath(root->right, val, path, index + 1)){
+        return 1;
     }
 }
+
+void CommonPath(node* root, char* val1, char* val2) {
+    char* path1[10];
+    char* path2[10];
+
+    for (int i = 0; i < 10; i++) {
+        path1[i] = (char*)malloc(10 * sizeof(char));
+        path2[i] = (char*)malloc(10 * sizeof(char));
+    }
+
+    findPath(root, val1, path1, 0);
+    findPath(root, val2, path2, 0); 
+
+    int i = 0;
+    while (strcmp(path1[i], path2[i]) == 0) {
+        printf("%s,", path1[i]);
+        i++;
+    }
+}
+
 int main() {
-    struct Node* root = createNode("Bangalore");
+    node* root = createNode("Bangalore");
 
-    root->left = createNode("Bangalore East");
-    root->right = createNode("Bangalore West");
+    root->left = createNode("Bangalore West");
+    root->right = createNode("Bangalore East");
 
-    root->left->left = createNode("C");
-    root->left->right = createNode("D");
+    root->left->left = createNode("A");
+    root->left->right = createNode("B");
+    
+    root->right->left = createNode("C");
+    root->right->right = createNode("D");
 
-    root->right->left = createNode("A");
-    root->right->right = createNode("B");
+    root->right->right->left = createNode("56001");
+    root->right->right->right = createNode("56002");
 
-    root->right->left->left = createNode("56001");
-    root->right->left->right = createNode("56002");
+    root->right->left->left = createNode("56003");
+    root->right->left->right = createNode("56004");
 
-    root->right->right->left = createNode("56003");
-    root->right->right->right = createNode("56004");
+    root->left->right->left = createNode("56005");
+    root->left->right->right = createNode("56006");
 
-    root->left->left->left = createNode("56005");
-    root->left->left->right = createNode("56006");
+    root->left->left->left = createNode("56007");
+    root->left->left->right = createNode("56008");
 
-    root->left->right->left = createNode("56007");
-    root->left->right->right = createNode("56008");
+    char val1[10];
+    char val2[10];
 
-    char regionCode[2][10];
-    printf("Enter region code 1: ");
-    scanf("%s", regionCode[0]);
-    printf("Enter region code 2: ");
-    scanf("%s", regionCode[1]);
+    printf("Corporation code 1: ");
+    scanf("%s", val1);
+    printf("Corporation code 2: ");
+    scanf("%s", val2);
 
-    char* getParent[2][10];
-    int length[2] = {0};
+    CommonPath(root, val1, val2);
 
-    for (int i = 0; i < 2; i++) {
-        for (int j = 0; j < 10; j++) {
-            getParent[i][j] = (char*)malloc(10 * sizeof(char));
-        }
-    }
-
-    printf("Output:\n");
-    for (int i = 0; i < 2; i++) {
-        getParentNodes(root, regionCode[i], getParent[i], &length[i]);
-        printf("getParent for %s: ", regionCode[i]);
-        for (int j = 0; j < length[i]; j++) {
-            printf("%s", getParent[i][j]);
-            if (j != length[i] - 1) {
-                printf(", ");
-            }
-        }
-        printf("\n");
-    }
+    return 0;
 }
